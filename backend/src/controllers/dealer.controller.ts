@@ -1,7 +1,7 @@
 import { getGoogleDealers } from "../config/serpApiConfig";
 import { reverseGeocode } from "../services/geocode.service";
 
-export const getNearbyDealers = async (req:any, res:any) => {
+export const getNearbyDealers = async (req:any, res:any) => { 
   const { product, latitude, longitude } = req.body;
 
   if (!product || !latitude || !longitude) {

@@ -1,8 +1,8 @@
 import axios from "axios";
-import {SERP_API_KEY} from "../secrets"
+import { SERP_API_KEY } from "../secrets";
 
 export const getGoogleDealers = async (query: string, location: string) => {
-  const apiKey = SERP_API_KEY;  // Replace your key
+  const apiKey = SERP_API_KEY;
   const url = `https://serpapi.com/search?engine=google_local&q=${query}&location=${encodeURIComponent(
     location
   )}&api_key=${apiKey}`;

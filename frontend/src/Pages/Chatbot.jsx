@@ -64,19 +64,55 @@ export default function Chatbot() {
     setMessages([...messages, { role: "user", content: input }]);
     setInput("");
     setLoading(true);
-
+  
     try {
       const response = await axiosInstance.post("http://localhost:3000/api/v1/ai/reply", {
         sessionId: activeSession,
         userReply: input,
       });
+  
       setMessages((prev) => [...prev, { role: "bot", content: response.data.message }]);
+  
+      // Now Dealer API Call Automatically If Message Contains Keyword
+      if (response.data.message.toLowerCase().includes("dealer")) {
+        fetchDealers(input);
+      }
+  
     } catch (err) {
       console.error("Reply Error:", err);
     } finally {
       setLoading(false);
     }
   };
+
+  const fetchDealers = async (query) => {
+    try {
+      const response = await axiosInstance.post("http://localhost:3000/api/v1/dealer/find", {
+        productName: query,
+      });
+  
+      if (response.data.dealers.length > 0) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "bot",
+            content: "Here are the dealers I found for you 👇",
+            type: "dealer",
+            dealers: response.data.dealers,
+          },
+        ]);
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          { role: "bot", content: "Sorry, no dealers found for this product near you." },
+        ]);
+      }
+    } catch (err) {
+      console.error("Dealer Fetch Error:", err);
+    }
+  };
+  
+  
 
   return (
     <div className="h-screen w-full flex bg-gray-900 text-white">
