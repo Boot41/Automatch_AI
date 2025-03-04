@@ -1,9 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import Navbar from "../Components/Navbar";
 
 const HomeLandingPage = () => {
   return (
+    <>
+    
+    <Navbar/>
     <motion.section 
       initial={{ opacity: 0, y: 50 }} 
       animate={{ opacity: 1, y: 0 }} 
@@ -99,6 +103,7 @@ const HomeLandingPage = () => {
         </Link>
       </motion.div>
     </motion.section>
+  </>
   );
 };
 

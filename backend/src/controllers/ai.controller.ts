@@ -10,23 +10,29 @@ export const startChat = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "User not authenticated" });
     }
 
-    const session = await prisma.session.create({
-      data: { userId: user.id },
+    // Create a new session
+    const newSession = await prisma.session.create({
+      data: {
+        userId: user.id,
+      },
     });
 
-    const welcomeMessage = `Hello ${user.name}! 👋 Welcome to AutoMatch AI! What product are you looking for today?`;
-    
-    await prisma.message.create({
-      data: { sessionId: session.id, role: "bot", content: welcomeMessage },
+    // Initial bot message
+    const welcomeMessage = await prisma.message.create({
+      data: {
+        sessionId: newSession.id,
+        role: "bot",
+        content: "Hello! How can I help you today?",
+      },
     });
 
-    res.status(200).json({
-      message: welcomeMessage,
-      sessionId: session.id,
+    res.status(201).json({
+      session: newSession,
+      message: welcomeMessage.content,
     });
   } catch (error: any) {
-    console.error("Error:", error.message);
-    res.status(500).json({ message: "Something went wrong" });
+    console.error("Start Chat Error:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
