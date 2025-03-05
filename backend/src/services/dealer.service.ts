@@ -3,6 +3,11 @@ import { getGoogleDealers } from "../config/serpApiConfig";
 
 export const getNearbyDealers = async (product: string, location: any) => {
   const city = await reverseGeocode(location.latitude, location.longitude);
+  if (!city) {
+    console.log("Fallback: Using 'Unknown Location'");
+    // city = "Unknown Location";
+  }
+  
   const query = `${product} dealers`;
 
   const results = await getGoogleDealers(query, city);
@@ -13,7 +18,7 @@ export const getNearbyDealers = async (product: string, location: any) => {
     rating: dealer.rating,
     address: dealer.address,
     thumbnail: dealer.thumbnail,
-    location: dealer.gps_coordinates,
+    location: dealer.directions,
   }));
 
   return dealers.slice(0, 3); // Only top 3 dealers

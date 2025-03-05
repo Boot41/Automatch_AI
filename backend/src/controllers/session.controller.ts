@@ -13,6 +13,13 @@ export const getSessions = async (req: Request, res: Response) => {
     const sessions = await prisma.session.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: "desc" },
+      include: {
+        messages: {
+          where: { role: "user" }, // Filter only user messages
+          orderBy: { createdAt: "asc" }, // Get the first user message
+          take: 1, // Fetch only the first message
+        },
+      },
     });
 
     res.status(200).json({ sessions });
@@ -21,6 +28,7 @@ export const getSessions = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 // Fetch messages for a given session
 export const getMessages = async (req: Request, res: Response) => {

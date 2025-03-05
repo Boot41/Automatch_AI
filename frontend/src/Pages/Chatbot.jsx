@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../store/auth";
 import Sidebar from "../chatbot/Sidebar";
 import ChatWindow from "../chatbot/ChatWindow";
+import DealerButton from "../Components/DealerButton";
 
 export default function Chatbot() {
   const [sessions, setSessions] = useState([]);
@@ -19,7 +20,8 @@ export default function Chatbot() {
   const fetchSessions = async () => {
     try {
       const response = await axiosInstance.get("http://localhost:3000/api/v1/user/sessions");
-      setSessions(response.data.sessions);
+      setSessions(response.data.sessions || []);
+
       if (response.data.sessions.length > 0) {
         setActiveSession(response.data.sessions[0].id);
         fetchMessages(response.data.sessions[0].id);
@@ -32,9 +34,10 @@ export default function Chatbot() {
   const fetchMessages = async (sessionId) => {
     try {
       const response = await axiosInstance.get(`http://localhost:3000/api/v1/user/messages/${sessionId}`);
-      setMessages(response.data.messages);
+      setMessages(response.data.messages || []);
     } catch (err) {
       console.error("Fetch Messages Error:", err);
+      setMessages([]);
     }
   };
 
@@ -46,7 +49,7 @@ export default function Chatbot() {
   const startChat = async () => {
     try {
       const response = await axiosInstance.post("http://localhost:3000/api/v1/ai/start");
-  
+
       if (response.data?.session?.id) {
         setSessions([response.data.session, ...sessions]);
         setActiveSession(response.data.session.id);
@@ -61,23 +64,17 @@ export default function Chatbot() {
 
   const sendMessage = async () => {
     if (!input.trim()) return;
-    setMessages([...messages, { role: "user", content: input }]);
+    setMessages((prev) => [...prev, { role: "user", content: input }]);
     setInput("");
     setLoading(true);
-  
+
     try {
       const response = await axiosInstance.post("http://localhost:3000/api/v1/ai/reply", {
         sessionId: activeSession,
         userReply: input,
       });
-  
+
       setMessages((prev) => [...prev, { role: "bot", content: response.data.message }]);
-  
-      // Now Dealer API Call Automatically If Message Contains Keyword
-      if (response.data.message.toLowerCase().includes("dealer")) {
-        fetchDealers(input);
-      }
-  
     } catch (err) {
       console.error("Reply Error:", err);
     } finally {
@@ -85,36 +82,8 @@ export default function Chatbot() {
     }
   };
 
-  const fetchDealers = async (query) => {
-    try {
-      const response = await axiosInstance.post("http://localhost:3000/api/v1/dealer/find", {
-        productName: query,
-      });
-  
-      if (response.data.dealers.length > 0) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "bot",
-            content: "Here are the dealers I found for you 👇",
-            type: "dealer",
-            dealers: response.data.dealers,
-          },
-        ]);
-      } else {
-        setMessages((prev) => [
-          ...prev,
-          { role: "bot", content: "Sorry, no dealers found for this product near you." },
-        ]);
-      }
-    } catch (err) {
-      console.error("Dealer Fetch Error:", err);
-    }
-  };
-  
-  
-
   return (
+    <>
     <div className="h-screen w-full flex bg-gray-900 text-white">
       <Sidebar
         sessions={sessions}
@@ -123,12 +92,15 @@ export default function Chatbot() {
         onNewChat={startChat}
       />
       <ChatWindow
-        messages={messages}
+        messages={Array.isArray(messages) ? messages : []}
         input={input}
         setInput={setInput}
         sendMessage={sendMessage}
         loading={loading}
       />
+      
     </div>
+    <DealerButton axiosInstance={axiosInstance} />
+    </>
   );
 }

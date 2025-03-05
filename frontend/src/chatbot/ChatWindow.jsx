@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 
 export default function ChatWindow({
   messages,
@@ -14,12 +15,12 @@ export default function ChatWindow({
   }, [messages]);
 
   return (
-    <div className="w-3/4 h-full flex flex-col bg-gray-900 shadow-lg rounded-lg overflow-hidden border border-gray-800">
+    <div className="w-3/2 h-full flex flex-col bg-gray-900 shadow-lg rounded-lg overflow-hidden border border-gray-800 pt-4 pb-4">
       <div className="p-4 h-96 overflow-y-auto flex-1 space-y-4 custom-scrollbar">
         {messages?.length > 0 ? (
-          messages.map((msg) => (
+          messages.map((msg, index) => (
             <div
-              key={msg.id}
+              key={index}
               className={`flex w-full ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
@@ -27,7 +28,7 @@ export default function ChatWindow({
                   msg.role === "user" ? "bg-blue-600 shadow-md" : "bg-gray-700 shadow-md"
                 }`}
               >
-                {msg.content}
+                <ReactMarkdown>{msg.content}</ReactMarkdown>
               </div>
             </div>
           ))

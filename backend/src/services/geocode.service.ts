@@ -5,14 +5,22 @@ export const reverseGeocode = async (lat: number, lon: number): Promise<string> 
 
   try {
     const response = await axios.get(url);
+    console.log("Geocode Response:", response.data);
+
     if (response.data && response.data.address) {
-      const city = response.data.address.city || response.data.address.town || response.data.address.village;
+      const city =
+        response.data.address.city ||
+        response.data.address.town ||
+        response.data.address.village ||
+        response.data.address.county ||
+        response.data.address.state;
+
       console.log("Detected City:", city);
+      if (!city) throw new Error("City Not Found");
       return city;
-    } else {
-      throw new Error("Location Not Found");
     }
-  } catch (err:any) {
+    throw new Error("Location Not Found");
+  } catch (err: any) {
     console.error("Reverse Geocode Error:", err.message);
     throw new Error("Failed to fetch location");
   }

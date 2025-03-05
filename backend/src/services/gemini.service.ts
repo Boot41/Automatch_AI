@@ -9,8 +9,8 @@ export async function generateContent(conversation: string[]) {
 
     let prompt = `${conversation.join("\n")}\n`;
 
-    if (conversation.length >= 5) {
-      prompt += `Based on the information provided, recommend exactly three products from the category with their name, price range, and top 3 features in a structured format like this:
+    if (conversation.length >= 4) {
+      prompt += `Now, based on the information provided, recommend exactly three products with:
 
 1. Product Name - Price Range
    Features: Feature 1, Feature 2, Feature 3
@@ -19,9 +19,11 @@ export async function generateContent(conversation: string[]) {
    Features: Feature 1, Feature 2, Feature 3
 
 3. Product Name - Price Range
-   Features: Feature 1, Feature 2, Feature 3`;
+   Features: Feature 1, Feature 2, Feature 3
+
+Reply only with the product recommendations. No further questions.`;
     } else {
-      prompt += `Ask only one more simple question if needed, otherwise provide the best recommendation possible.`;
+      prompt += `Ask only one **essential** question to finalize the recommendation if needed.`;
     }
 
     const result = await model.generateContent(prompt);
