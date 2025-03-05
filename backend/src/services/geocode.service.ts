@@ -1,6 +1,13 @@
 import axios from "axios";
 
 export const reverseGeocode = async (lat: number, lon: number): Promise<string> => {
+  // Since we're using fixed coordinates for Bangalore, we can just return 'Bangalore' directly
+  // This avoids potential API failures with the geocoding service
+  console.log("Using fixed location: Bangalore");
+  return "Bangalore";
+  
+  // The code below is kept for reference but not used
+  /*
   const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
 
   try {
@@ -24,4 +31,5 @@ export const reverseGeocode = async (lat: number, lon: number): Promise<string> 
     console.error("Reverse Geocode Error:", err.message);
     throw new Error("Failed to fetch location");
   }
+  */
 };

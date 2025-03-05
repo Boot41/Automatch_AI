@@ -22,7 +22,9 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       return res.status(401).json({ message: "User not found." });
     }
 
-    (req as any).user = user; // Type casting here
+    // Store both the user and the token in the request object
+    (req as any).user = user;
+    (req as any).token = token; // Add the token to the request object
     next();
   } catch (error) {
     console.log(error);

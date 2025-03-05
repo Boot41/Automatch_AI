@@ -85,20 +85,29 @@ export default function Chatbot() {
   return (
     <>
     <div className="h-screen w-full flex bg-gray-900 text-white">
-      <Sidebar
-        sessions={sessions}
-        activeSession={activeSession}
-        onSelectSession={onSelectSession}
-        onNewChat={startChat}
-      />
-      <ChatWindow
-        messages={Array.isArray(messages) ? messages : []}
-        input={input}
-        setInput={setInput}
-        sendMessage={sendMessage}
-        loading={loading}
-      />
+      {/* Sidebar - 25% width */}
+      <div className="w-1/4 flex-shrink-0">
+        <Sidebar
+          sessions={sessions}
+          setSessions={setSessions}
+          activeSession={activeSession}
+          onSelectSession={onSelectSession}
+          onNewChat={startChat}
+        />
+      </div>
       
+      {/* Chat Window - 75% width */}
+      <div className="w-3/4 flex-shrink-0">
+        <ChatWindow
+          messages={Array.isArray(messages) ? messages : []}
+          input={input}
+          setInput={setInput}
+          sendMessage={sendMessage}
+          loading={loading}
+          setLoading={setLoading}
+          setMessages={setMessages}
+        />
+      </div>
     </div>
     <DealerButton axiosInstance={axiosInstance} />
     </>

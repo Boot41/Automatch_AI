@@ -30,7 +30,7 @@ const Navbar = () => {
         >
           <MessageSquare className="h-10 w-10 text-indigo-400 animate-spin-slow" />
           <span className="text-2xl font-extrabold text-indigo-400 tracking-widest">
-            
+            Automatch AI
           </span>
         </motion.div>
 
@@ -54,17 +54,9 @@ const Navbar = () => {
           ))}
         </nav>
 
-        {isTokenAvailable ? (
-          <ProfileDropdown />
-        ) : (
-          <Link
-            to="/signin"
-            className="relative inline-flex items-center px-8 py-2 overflow-hidden text-lg font-medium text-white border-2 border-indigo-600 rounded-full hover:text-white group"
-          >
-            <span className="absolute left-0 block w-full h-0 transition-all bg-indigo-600 opacity-100 group-hover:h-full top-1/2 group-hover:top-0 duration-400 ease-in-out"></span>
-            <span className="relative">Sign In</span>
-          </Link>
-        )}
+        {/* <div className="flex items-center">
+          <Link to="/" className="text-xl font-bold text-indigo-400">AutoMatch AI</Link>
+        </div> */}
       </div>
     </motion.header>
   );
