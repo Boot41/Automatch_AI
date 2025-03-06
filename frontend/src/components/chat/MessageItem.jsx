@@ -61,6 +61,7 @@ export const BotProductRecommendationMessage = ({ message, index, handleFindDeal
 
 // Bot Message Component with Dealer Information
 export const BotDealerInfoMessage = ({ message, index, selectedProduct }) => {
+  
   return (
     <motion.div
       key={`bot-${index}`}

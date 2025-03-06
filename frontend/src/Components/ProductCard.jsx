@@ -136,7 +136,10 @@ const ProductCard = ({ product, onFindDealers }) => {
       
       <div className="p-4 bg-gradient-to-r from-gray-800 to-gray-700 mt-auto">
         <motion.button 
-          onClick={() => onFindDealers(name)}
+          onClick={() => {
+            console.log('Find Dealers clicked for:', name);
+            onFindDealers(name);
+          }}
           className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white py-3 px-4 rounded-xl flex items-center justify-center transition duration-300 shadow-lg"
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}

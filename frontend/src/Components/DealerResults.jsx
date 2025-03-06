@@ -8,11 +8,30 @@ const DealerResults = ({ message, productName }) => {
   const [extractedProductName, setExtractedProductName] = useState('');
   
   useEffect(() => {
-    // Extract product name from message
-    const productMatch = message.match(/for \*\*([^*]+)\*\*/);
-    if (productMatch && productMatch[1]) {
-      setExtractedProductName(productMatch[1].trim());
+    console.log('DealerResults received message:', message);
+    console.log('DealerResults received productName prop:', productName);
+    
+    // Extract product name from message with multiple patterns
+    const productPatterns = [
+      /for \*\*([^*]+)\*\*/,
+      /for ([^\n]+) in your area/,
+      /dealers near you for ([^\n]+)/
+    ];
+    
+    let foundProductName = null;
+    for (const pattern of productPatterns) {
+      const match = message.match(pattern);
+      if (match && match[1]) {
+        foundProductName = match[1].trim()
+        console.log('Extracted product name from message:', foundProductName);
+        break;
+      }
+    }
+    
+    if (foundProductName) {
+      setExtractedProductName(foundProductName);
     } else if (productName) {
+      console.log('Using provided productName prop:', productName);
       setExtractedProductName(productName);
     }
     
@@ -20,57 +39,112 @@ const DealerResults = ({ message, productName }) => {
     const dealerList = [];
     
     try {
-      // Match dealer entries in the format: 1. **DealerName**
-      const dealerRegex = /(\d+)\. \*\*([^*]+)\*\*([\s\S]*?)(?=\d+\. \*\*|$)/g;
-      let match;
+      console.log('Parsing dealer message:', message);
       
-      while ((match = dealerRegex.exec(message)) !== null) {
-        const dealerNumber = match[1];
-        const dealerName = match[2].trim();
-        const dealerDetails = match[3] || '';
+      // Try multiple regex patterns to extract dealer information
+      const dealerPatterns = [
+        // Pattern 1: Numbered list with asterisks (e.g., "1. **Dealer Name**")
+        /(\d+)\. \*\*([^*]+)\*\*([\s\S]*?)(?=\d+\. \*\*|$)/g,
+        // Pattern 2: Simple format without numbers (e.g., "**Dealer Name**")
+        /\*\*([^*]+)\*\*([\s\S]*?)(?=\*\*|$)/g,
+        // Pattern 3: Simple text format (e.g., "Dealer Name:")
+        /([^:\n]+):[\s\S]*?(?=\n[^:\n]+:|$)/g
+      ];
+      
+
+      
+      // Try each pattern until we find matches
+      let foundDealers = false;
+      
+      for (const pattern of dealerPatterns) {
+        let match;
+        pattern.lastIndex = 0; // Reset regex index
         
-        // Extract address, phone, rating, and hours using more robust patterns
-        const addressMatch = dealerDetails.match(/• Address: ([^\n]+)/);
-        const phoneMatch = dealerDetails.match(/• Phone: ([^\n]+)/);
-        const ratingMatch = dealerDetails.match(/• Rating: ([^\n]+)/);
-        const hoursMatch = dealerDetails.match(/• Open: ([^\n]+)/);
+        while ((match = pattern.exec(message)) !== null) {
+          foundDealers = true;
+          
+          // Different extraction based on pattern
+          const dealerName = match[1].includes('**') ? match[2].trim() : match[1].trim();
+          const dealerDetails = match[match.length - 1] || '';
+          
+          console.log('Found dealer:', dealerName, 'with details:', dealerDetails);
+          
+          // Extract address, phone, rating, and hours using multiple patterns
+          const addressPatterns = [/• Address: ([^\n]+)/, /Address: ([^\n]+)/, /address: ([^\n]+)/];
+          const phonePatterns = [/• Phone: ([^\n]+)/, /Phone: ([^\n]+)/, /phone: ([^\n]+)/];
+          const ratingPatterns = [/• Rating: ([^\n]+)/, /Rating: ([^\n]+)/, /rating: ([^\n]+)/];
+          const hoursPatterns = [/• Open: ([^\n]+)/, /Hours: ([^\n]+)/, /Open: ([^\n]+)/, /hours: ([^\n]+)/];
+          
+          const findMatch = (patterns, defaultValue) => {
+            for (const p of patterns) {
+              const m = dealerDetails.match(p);
+              if (m) return m[1].trim();
+            }
+            return defaultValue;
+          };
+          
+          const addressMatch = findMatch(addressPatterns, null);
+          const phoneMatch = findMatch(phonePatterns, null);
+          const ratingMatch = findMatch(ratingPatterns, null);
+          const hoursMatch = findMatch(hoursPatterns, null);
         
         dealerList.push({
-          id: dealerNumber,
+          id: match[1] || String(dealerList.length + 1),
           name: dealerName,
-          address: addressMatch ? addressMatch[1].trim() : 'Address not available',
-          phone: phoneMatch ? phoneMatch[1].trim() : 'Phone not available',
-          rating: ratingMatch ? ratingMatch[1].trim() : '4.0/5',
-          hours: hoursMatch ? hoursMatch[1].trim() : '9:00 AM - 6:00 PM'
+          address: addressMatch || 'Address not available',
+          phone: phoneMatch || 'Phone not available',
+          rating: ratingMatch || '4.5',
+          hours: hoursMatch || '9:00 AM - 6:00 PM'
         });
       }
       
-      // If no dealers found using the regex, try the alternative approach
-      if (dealerList.length === 0) {
-        const dealerBlocks = message.split(/(\d+)\. \*\*([^*]+)\*\*/);
+      // If we found dealers with this pattern, stop trying other patterns
+      if (foundDealers) {
+        break;
+      }
+    }
+      
+    // If no dealers found using any of the patterns, try a fallback approach
+    if (dealerList.length === 0) {
+      console.log('No dealers found with regex patterns, trying fallback approach');
+      
+      // Simple fallback: look for key dealer indicators in the message
+      if (message.includes('Address:') && (message.includes('Phone:') || message.includes('Rating:'))) {
+        // Split by lines and look for dealer information blocks
+        const lines = message.split('\n');
+        let currentDealer = null;
         
-        for (let i = 1; i < dealerBlocks.length; i += 3) {
-          if (dealerBlocks[i] && dealerBlocks[i+1]) {
-            const dealerNumber = dealerBlocks[i];
-            const dealerName = dealerBlocks[i+1];
-            const dealerDetails = dealerBlocks[i+2] || '';
-            
-            // Extract address, phone, rating, and hours
-            const addressMatch = dealerDetails.match(/• Address: ([^\n]+)/);
-            const phoneMatch = dealerDetails.match(/• Phone: ([^\n]+)/);
-            const ratingMatch = dealerDetails.match(/• Rating: ([^\n]+)/);
-            const hoursMatch = dealerDetails.match(/• Open: ([^\n]+)/);
-            
-            dealerList.push({
-              id: dealerNumber,
-              name: dealerName,
-              address: addressMatch ? addressMatch[1].trim() : 'Address not available',
-              phone: phoneMatch ? phoneMatch[1].trim() : 'Phone not available',
-              rating: ratingMatch ? ratingMatch[1].trim() : '4.0/5',
-              hours: hoursMatch ? hoursMatch[1].trim() : '9:00 AM - 6:00 PM'
-            });
+        for (const line of lines) {
+          const trimmedLine = line.trim();
+          
+          // Check if this line could be a dealer name
+          if (trimmedLine && !trimmedLine.includes(':') && !trimmedLine.startsWith('•')) {
+            currentDealer = {
+              id: String(dealerList.length + 1),
+              name: trimmedLine,
+              address: 'Address not available',
+              phone: 'Phone not available',
+              rating: '4.5',
+              hours: '9:00 AM - 6:00 PM'
+            };
+            dealerList.push(currentDealer);
+          } 
+          // If we have a current dealer, try to extract details
+          else if (currentDealer) {
+            if (trimmedLine.includes('Address:')) {
+              currentDealer.address = trimmedLine.split('Address:')[1].trim();
+            } else if (trimmedLine.includes('Phone:')) {
+              currentDealer.phone = trimmedLine.split('Phone:')[1].trim();
+            } else if (trimmedLine.includes('Rating:')) {
+              currentDealer.rating = trimmedLine.split('Rating:')[1].trim();
+            } else if (trimmedLine.includes('Open:') || trimmedLine.includes('Hours:')) {
+              const hoursPart = trimmedLine.includes('Open:') ? 
+                trimmedLine.split('Open:')[1] : trimmedLine.split('Hours:')[1];
+              currentDealer.hours = hoursPart.trim();
+            }
           }
         }
+      }
       }
     } catch (error) {
       console.error('Error parsing dealer information:', error);

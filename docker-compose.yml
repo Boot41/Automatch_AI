@@ -1,51 +1,45 @@
 version: '3.8'
 
 services:
-  # Backend service
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: automatch-backend
-    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/automatch?schema=public
-      - JWT_SECRET=automatch_secret
-      - SERP_API_KEY=4f68aa9b6e7491102b020c0f28f8b283af8fa5e7a83d67844c267751c78fc638
-      - GEMINI_API_KEY=AIzaSyAj5Gh1iLFG0HvdZqaNGTVJkbkeLX5S5nE
+      DATABASE_URL: "postgresql://neondb_owner:npg_7B2VWHjCeYuT@postgres:5432/neondb"
+      JWT_SECRET: "automatch_secret"
+      GEMINI_API_KEY: "AIzaSyAj5Gh1iLFG0HvdZqaNGTVJkbkeLX5S5nE"
+      SERP_API_KEY: "4f68aa9b6e7491102b020c0f28f8b283af8fa5e7a83d67844c267751c78fc638"
     depends_on:
-      - db
+      postgres:
+        condition: service_healthy
+    restart: always
 
-  # Frontend service
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: automatch-frontend
-    restart: unless-stopped
     ports:
       - "5173:5173"
     depends_on:
       - backend
+    restart: always
 
-  # Database service
-  db:
-    image: postgres:15-alpine
-    container_name: automatch-db
-    restart: unless-stopped
-    ports:
-      - "5432:5432"
+  postgres:
+    image: postgres:15
+    restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=automatch
+      POSTGRES_USER: neondb_owner
+      POSTGRES_PASSWORD: npg_7B2VWHjCeYuT
+      POSTGRES_DB: neondb
+    ports:
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U neondb_owner -d neondb"]
       interval: 5s
       timeout: 5s
       retries: 5

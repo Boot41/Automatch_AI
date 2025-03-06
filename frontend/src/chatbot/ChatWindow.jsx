@@ -191,10 +191,35 @@ export default function ChatWindow({
 
   // Check if a message is from the bot and contains dealer information
   const isDealerResponse = (content) => {
+    // Add debug logging
+    console.log('Checking if message is a dealer response:', content.substring(0, 100) + '...');
+    
+
+    
+    // Check if the message contains dealer-specific patterns
+    const hasDealerKeyword = content.toLowerCase().includes('dealer');
+    const hasHereAreSomeDealers = content.includes('Here are some dealers');
+    const hasAddressAndPhone = content.includes('Address:') && content.includes('Phone:');
+    const hasNumberedDealerPattern = content.match(/\d+\. \*\*.*\*\*[\s\S]*?\u2022 Address:/) !== null;
+    
+    // Log the results of each check
+    console.log('Dealer detection results:', {
+      hasDealerKeyword,
+      hasHereAreSomeDealers,
+      hasAddressAndPhone,
+      hasNumberedDealerPattern
+    });
+    
+    // If the message contains 'Samsung Galaxy' (from your screenshot) and dealer info, it's definitely a dealer response
+    if (content.includes('Samsung Galaxy') && hasDealerKeyword) {
+      console.log('Detected Samsung Galaxy dealer response');
+      return true;
+    }
+    
     return (
-      content.includes("dealers near you") || 
-      content.includes("find any dealers") ||
-      (content.includes("dealer") && content.includes("Address") && content.includes("Phone"))
+      hasHereAreSomeDealers || 
+      (hasDealerKeyword && hasAddressAndPhone) ||
+      hasNumberedDealerPattern
     );
   };
 

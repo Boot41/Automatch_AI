@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MessageSquare, Eye, EyeOff, Lock, Mail, ArrowRight, Loader2 } from 'lucide-react';
-import axios from 'axios';
+import api from '../config/api';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -23,7 +23,7 @@ const SignIn = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/api/v1/auth/signin', { email, password });
+      const response = await api.post('/api/v1/auth/signin', { email, password });
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('isAuthenticated', 'true');
       navigate('/chatbot');

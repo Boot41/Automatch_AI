@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MessageSquare, Eye, EyeOff, Lock, Mail, User, Loader2 } from 'lucide-react';
+import api from '../config/api';
 
 const SignUp = () => {
   const [name, setName] = useState('');
@@ -23,21 +24,17 @@ const SignUp = () => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3000/api/v1/auth/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password }),
+      const response = await api.post('/api/v1/auth/signup', {
+        name,
+        email,
+        password
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to create account');
-      }
-
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('isAuthenticated', 'true');
       navigate('/signin');
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.message || 'Failed to create account');
     } finally {
       setIsLoading(false);
     }

@@ -12,7 +12,7 @@ export const getGoogleDealers = async (query: string, location: string) => {
     const response = await axios.get(url);
 
     if (response.data.local_results && response.data.local_results.length > 0) {
-      return response.data.local_results.slice(0, 6);
+      return response.data.local_results.slice(0, 3);
     }
     
     // If no results, fall back to mock data

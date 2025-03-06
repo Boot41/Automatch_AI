@@ -1,29 +1,25 @@
-FROM node:22.14.0-alpine
+FROM node:22.14.0
 
 WORKDIR /app
 
-# Install necessary tools
-RUN apk add --no-cache postgresql-client
-
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Copy package.json and package-lock.json to leverage Docker cache
+COPY package.json package-lock.json ./
+COPY prisma ./prisma
 
 # Install dependencies
 RUN npm install
 
-# Copy prisma schema
-COPY prisma ./prisma/
-
-# Copy the startup script
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
-# Copy the rest of the application
+# Copy the entire app to the container
 COPY . .
 
-# Expose the port the app runs on
+# Generate Prisma client
+RUN npx prisma generate
+
+# Expose the backend port
 EXPOSE 3000
 
-# Use the startup script to run migrations before starting the app
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["npm", "start"]
+# Create a startup script
+RUN echo '#!/bin/bash\necho "Running migrations..."\nnpx prisma migrate deploy\necho "Pushing schema..."\nnpx prisma db push --accept-data-loss\necho "Starting server..."\nnpm start' > /app/start.sh && chmod +x /app/start.sh
+
+# Start the backend app
+CMD ["/app/start.sh"]

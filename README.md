@@ -23,7 +23,7 @@ An AI-powered application to match users with nearby dealers based on their prod
    GEMINI_API_KEY=your_gemini_api_key_here
    ```
 
-### Running the Application
+### Running the Application Locally
 
 1. Build and start all services:
    ```bash
@@ -50,6 +50,54 @@ docker-compose down
 ```bash
 docker-compose logs -f
 ```
+
+## GCP Deployment
+
+### Prerequisites
+
+- Google Cloud Platform account
+- gcloud CLI installed and configured
+- Docker installed locally
+
+### Deployment Steps
+
+1. Update the `deploy-to-gcp.sh` script with your GCP project ID and preferred region:
+   ```bash
+   # Configuration
+   PROJECT_ID="your-gcp-project-id"  # Replace with your GCP project ID
+   REGION="us-central1"  # Replace with your preferred region
+   ```
+
+2. Make sure your environment variables are set:
+   ```bash
+   export DATABASE_URL="your_database_url"
+   export JWT_SECRET="your_jwt_secret"
+   export GEMINI_API_KEY="your_gemini_api_key"
+   export SERP_API_KEY="your_serp_api_key"
+   ```
+
+3. Run the deployment script:
+   ```bash
+   ./deploy-to-gcp.sh
+   ```
+
+4. The script will:
+   - Build the combined Docker image
+   - Push it to Google Container Registry
+   - Deploy it to Cloud Run
+   - Output the URL where your application is accessible
+
+### Updating the Deployment
+
+To update your application, make your changes and run the deployment script again.
+
+### Monitoring and Logs
+
+You can monitor your application and view logs in the Google Cloud Console:
+
+1. Go to Cloud Run in the GCP Console
+2. Select your service (automatch-ai)
+3. Click on "Logs" to view application logs
 
 ## Development
 

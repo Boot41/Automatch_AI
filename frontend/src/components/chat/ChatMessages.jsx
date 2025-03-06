@@ -43,11 +43,22 @@ const ChatMessages = ({
             }
 
             // For bot messages
-            const isProductRecommendation = containsProductRecommendations(msg.content);
             const isDealerInfo = isDealerResponse(msg.content);
+            const isProductRecommendation = !isDealerInfo && containsProductRecommendations(msg.content);
 
-            // Product recommendations
-            if (isProductRecommendation) {
+            // Dealer information - check this first
+            if (isDealerInfo) {
+              return (
+                <BotDealerInfoMessage
+                  key={`bot-${index}`}
+                  message={msg}
+                  index={index}
+                  selectedProduct={selectedProduct}
+                />
+              );
+            }
+            // Product recommendations - check this second
+            else if (isProductRecommendation) {
               return (
                 <BotProductRecommendationMessage
                   key={`bot-${index}`}
