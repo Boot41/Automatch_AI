@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Home from "./Pages/Home";
 import Chatbot from "./Pages/Chatbot";
 import About from "./Pages/About";
-import Pricing from "./Pages/Pricing";
+import Contact from "./Pages/Contact";
 import SignIn from "./Pages/SignIn";
 import SignUp from "./Pages/SignUp";
 import Profile from "./Components/Profile";
@@ -29,7 +29,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path="/chatbot" element={<Chatbot />} />
           <Route path="/about" element={<About />} />
-          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/contact" element={<Contact />} />
 
           {/* authentication routes defined  */}
 
