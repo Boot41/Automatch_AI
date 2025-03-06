@@ -33,7 +33,29 @@ export default function Chatbot() {
   const fetchMessages = async (sessionId) => {
     try {
       const response = await axiosInstance.get(`http://localhost:3000/api/v1/user/messages/${sessionId}`);
-      setMessages(response.data.messages || []);
+      
+      // Process messages to handle dealer messages
+      const processedMessages = (response.data.messages || []).map(msg => {
+        // Check if the message is a dealer message (contains dealer data in JSON format)
+        if (msg.role === 'bot' && msg.content.includes('"type":"dealer"')) {
+          try {
+            const dealerData = JSON.parse(msg.content);
+            return {
+              role: 'bot',
+              type: 'dealer',
+              dealers: dealerData.dealers || [],
+              content: dealerData.message || 'Here are some dealers near you.',
+              id: msg.id
+            };
+          } catch (e) {
+            console.error('Error parsing dealer message:', e);
+            return msg;
+          }
+        }
+        return msg;
+      });
+      
+      setMessages(processedMessages);
     } catch (err) {
       console.error("Fetch Messages Error:", err);
       setMessages([]);
@@ -73,7 +95,17 @@ export default function Chatbot() {
         userReply: input,
       });
 
-      setMessages((prev) => [...prev, { role: "bot", content: response.data.message }]);
+      // Check if the response contains dealer information
+      if (response.data.type === 'dealer') {
+        setMessages((prev) => [...prev, { 
+          role: "bot", 
+          type: "dealer",
+          dealers: response.data.dealers || [],
+          content: response.data.message || "Here are some dealers near you."
+        }]);
+      } else {
+        setMessages((prev) => [...prev, { role: "bot", content: response.data.message }]);
+      }
     } catch (err) {
       console.error("Reply Error:", err);
     } finally {
@@ -105,6 +137,7 @@ export default function Chatbot() {
           loading={loading}
           setLoading={setLoading}
           setMessages={setMessages}
+          activeSession={activeSession}
         />
       </div>
     </div>

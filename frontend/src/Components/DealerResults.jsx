@@ -85,11 +85,12 @@ const DealerCard = ({ dealer }) => {
   );
 };
 
-const DealerResults = ({ dealers = [], isLoading, error }) => {
+const DealerResults = ({ dealers = [], isLoading, error, location }) => {
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center py-8">
+      <div className="flex flex-col justify-center items-center py-8 space-y-3">
         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
+        <p className="text-gray-400">Searching for dealers near you...</p>
       </div>
     );
   }
@@ -98,21 +99,30 @@ const DealerResults = ({ dealers = [], isLoading, error }) => {
     return (
       <div className="bg-red-900/30 border border-red-700 rounded-lg p-4 text-center">
         <p className="text-red-300">{error}</p>
+        <button 
+          className="mt-3 px-4 py-2 bg-red-700 hover:bg-red-600 rounded-md text-white text-sm transition-colors"
+          onClick={() => window.location.reload()}
+        >
+          Try Again
+        </button>
       </div>
     );
   }
 
   if (!dealers || dealers.length === 0) {
     return (
-      <div className="bg-gray-800 rounded-lg p-4 text-center">
-        <p className="text-gray-400">No dealers found for this product in your area.</p>
+      <div className="bg-gray-800 rounded-lg p-6 text-center space-y-3">
+        <p className="text-gray-400">No dealers found for this product {location ? `near ${location}` : 'in your area'}.</p>
+        <p className="text-gray-500 text-sm">Try searching for a different product or location.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <h3 className="text-xl font-semibold text-white mb-4">Dealers Near You</h3>
+      <h3 className="text-xl font-semibold text-white mb-4">
+        {dealers.length} Dealer{dealers.length !== 1 ? 's' : ''} {location ? `Near ${location}` : 'Near You'}
+      </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {dealers.map((dealer, index) => (
           <DealerCard key={index} dealer={dealer} />

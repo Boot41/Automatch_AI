@@ -61,6 +61,45 @@ export const replyChat = async (req: Request, res: Response) => {
                           userReply.toLowerCase().includes("nearby") ||
                           userReply.toLowerCase().includes("store");
 
+    // Handle dealer search request
+    if (userReply.toLowerCase().includes('find dealers') || userReply.toLowerCase().includes('dealers near me')) {
+      const productName = extractProduct(previousMessages);
+      
+      if (productName) {
+        try {
+          // Get user location (would normally come from frontend)
+          const location = "New Delhi"; // Default location
+          
+          // Call dealer service
+          const dealerResponse = await axios.post(
+            'http://localhost:3000/api/v1/dealers/search',
+            { location, productName },
+            { headers: { Authorization: req.headers.authorization } }
+          );
+          
+          const dealerData = {
+            type: 'dealer',
+            message: `Here are some dealers for ${productName} near ${location}`,
+            dealers: dealerResponse.data.data || []
+          };
+          
+          // Save dealer response as JSON string
+          await prisma.message.create({
+            data: { 
+              sessionId: Number(sessionId), 
+              role: "bot", 
+              content: JSON.stringify(dealerData)
+            },
+          });
+          
+          return res.status(200).json(dealerData);
+        } catch (error) {
+          console.error('Dealer search error:', error);
+          // Continue with normal AI response if dealer search fails
+        }
+      }
+    }
+
     // Format messages for the AI prompt
     const prompt = previousMessages.map((msg) => `${msg.role}: ${msg.content}`).join("\n");
     
@@ -153,6 +192,49 @@ export const replyChat = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error("Error:", error.message);
     res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+// Save dealer message
+export const saveDealerMessage = async (req: Request, res: Response) => {
+  try {
+    const { sessionId, userMessage, dealerData } = req.body;
+    const user = (req as any).user;
+
+    if (!user) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    // Validate session ownership
+    const session = await prisma.session.findUnique({
+      where: { id: Number(sessionId) },
+      include: { user: true },
+    });
+
+    if (!session || session.userId !== user.id) {
+      return res.status(403).json({ message: "Unauthorized access to session" });
+    }
+
+    // Save user message if provided
+    if (userMessage) {
+      await prisma.message.create({
+        data: { sessionId: Number(sessionId), role: "user", content: userMessage },
+      });
+    }
+
+    // Save dealer message
+    await prisma.message.create({
+      data: { 
+        sessionId: Number(sessionId), 
+        role: "bot", 
+        content: JSON.stringify(dealerData)
+      },
+    });
+
+    return res.status(200).json({ success: true });
+  } catch (error: any) {
+    console.error("Save Dealer Message Error:", error.message);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

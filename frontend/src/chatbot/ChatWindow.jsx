@@ -17,6 +17,7 @@ export default function ChatWindow({
   loading,
   setLoading,
   setMessages,
+  activeSession
 }) {
   const { isTokenAvailable } = useAuth();
   const [messageToDelete, setMessageToDelete] = useState(null);
@@ -148,6 +149,21 @@ export default function ChatWindow({
       
       console.log('Dealer search response:', response.data);
       
+      // Save the dealer message to the backend
+      try {
+        await api.post('/api/v1/ai/save-dealer-message', {
+          sessionId: activeSession,
+          userMessage: `Find dealers for ${productName} near me`,
+          dealerData: {
+            type: 'dealer',
+            message: `Here are some dealers for ${productName} near ${userLocation}`,
+            dealers: response.data?.data || []
+          }
+        });
+      } catch (error) {
+        console.error('Error saving dealer message:', error);
+      }
+      
       // Update the bot message with dealer results
       setMessages(prev => 
         prev.map(msg => 
@@ -155,7 +171,8 @@ export default function ChatWindow({
             ? { 
                 ...msg, 
                 isLoading: false, 
-                dealers: response.data?.data || [] 
+                dealers: response.data?.data || [],
+                location: userLocation
               } 
             : msg
         )

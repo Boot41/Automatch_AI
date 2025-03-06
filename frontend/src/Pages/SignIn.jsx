@@ -23,9 +23,25 @@ const SignIn = () => {
     setIsLoading(true);
 
     try {
+      // Sign in the user
       const response = await api.post('/api/v1/auth/signin', { email, password });
-      localStorage.setItem('token', response.data.token);
+      const token = response.data.token;
+      
+      // Store the token
+      localStorage.setItem('token', token);
       localStorage.setItem('isAuthenticated', 'true');
+      
+      // Update API headers with the new token
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      
+      // Start a new chat session
+      try {
+        await api.post('/api/v1/ai/start');
+      } catch (chatErr) {
+        console.error('Error starting chat session:', chatErr);
+      }
+      
+      // Navigate to chatbot page
       navigate('/chatbot');
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid email or password. Please try again.');

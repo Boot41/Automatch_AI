@@ -122,7 +122,18 @@ export default function Sidebar({
           <div className="space-y-2">
             {sessions.map((session) => {
               const userMessage = session?.messages?.[0]?.content;
-              const sessionTitle = userMessage?.slice(0, 28) + (userMessage?.length > 28 ? "..." : "") || "New Conversation";
+              let sessionTitle = userMessage?.slice(0, 28) + (userMessage?.length > 28 ? "..." : "");
+              
+              // If no user message, use a descriptive title
+              if (!sessionTitle) {
+                if (title === "Today") {
+                  sessionTitle = "Today's Conversation";
+                } else if (title === "Yesterday") {
+                  sessionTitle = "Yesterday's Conversation";
+                } else {
+                  sessionTitle = `Conversation from ${moment(session.createdAt).format("MMM D")}`;  
+                }
+              }
 
               return (
                 <motion.div

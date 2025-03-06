@@ -1,12 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { User, Bot, Trash2 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+import { User, Bot} from 'lucide-react';
 import ProductRecommendations from '../../Components/ProductRecommendations';
 import DealerResults from '../../Components/DealerResults';
 
 // User Message Component
-export const UserMessage = ({ message, index, setShowMessageActions, showMessageActions, setMessageToDelete }) => {
+export const UserMessage = ({ message, index, setShowMessageActions}) => {
   return (
     <motion.div
       key={`user-${index}`}
