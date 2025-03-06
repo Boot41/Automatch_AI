@@ -8,7 +8,6 @@ import { AnimatePresence } from "framer-motion";
 import ChatHeader from "../components/chat/ChatHeader";
 import ChatInput from "../components/chat/ChatInput";
 import ChatMessages from "../components/chat/ChatMessages";
-import DeleteMessageModal from "../components/chat/DeleteMessageModal";
 
 export default function ChatWindow({
   messages,
