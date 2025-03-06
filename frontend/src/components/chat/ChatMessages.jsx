@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   UserMessage,
   BotProductRecommendationMessage,
-  BotDealerInfoMessage,
   BotRegularMessage,
+  BotDealerInfoMessage,
   TypingIndicator
 } from './MessageItem';
 import WelcomeScreen from './WelcomeScreen';
@@ -15,13 +15,12 @@ const ChatMessages = ({
   loading,
   containsProductRecommendations,
   isDealerResponse,
-  handleFindDealers,
-  selectedProduct,
   setShowMessageActions,
   showMessageActions,
   setMessageToDelete,
   messagesEndRef,
-  isTokenAvailable
+  isTokenAvailable,
+  onFindDealers
 }) => {
   return (
     <div className="p-6 overflow-y-auto flex-1 space-y-6 custom-scrollbar bg-opacity-50">
@@ -43,39 +42,27 @@ const ChatMessages = ({
             }
 
             // For bot messages
-            const isDealerInfo = isDealerResponse(msg.content);
-            const isProductRecommendation = !isDealerInfo && containsProductRecommendations(msg.content);
+            const isProductRecommendation = containsProductRecommendations(msg.content);
+            const isDealerInfo = msg && msg.type === 'dealer';
 
-            // Dealer information - check this first
+            // Dealer information
             if (isDealerInfo) {
               return (
                 <BotDealerInfoMessage
                   key={`bot-${index}`}
                   message={msg}
                   index={index}
-                  selectedProduct={selectedProduct}
                 />
               );
             }
-            // Product recommendations - check this second
+            // Product recommendations
             else if (isProductRecommendation) {
               return (
                 <BotProductRecommendationMessage
                   key={`bot-${index}`}
                   message={msg}
                   index={index}
-                  handleFindDealers={handleFindDealers}
-                />
-              );
-            }
-            // Dealer information
-            else if (isDealerInfo) {
-              return (
-                <BotDealerInfoMessage
-                  key={`bot-${index}`}
-                  message={msg}
-                  index={index}
-                  selectedProduct={selectedProduct}
+                  onFindDealers={onFindDealers}
                 />
               );
             }

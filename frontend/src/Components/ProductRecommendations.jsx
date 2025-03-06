@@ -51,6 +51,7 @@ const ProductRecommendations = ({ message, onFindDealers }) => {
         </div>
         <p className="text-gray-300 text-sm">
           {intro || "Here are the top recommendations based on your requirements. Click on Amazon or Flipkart links to purchase online."}
+          {onFindDealers && " You can also find local dealers for these products."}
         </p>
       </motion.div>
 
@@ -74,20 +75,6 @@ const ProductRecommendations = ({ message, onFindDealers }) => {
           </motion.div>
         ))}
       </motion.div>
-      
-      {/* Dealer instruction message */}
-      {message.includes('find dealers') && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="bg-indigo-900/30 border border-indigo-800/50 rounded-lg p-4 mt-6 text-center"
-        >
-          <p className="text-indigo-200">
-            <span className="font-semibold">Looking for local stores?</span> Click "Find Dealers" on any product to locate stores near you.
-          </p>
-        </motion.div>
-      )}
     </div>
   );
 };

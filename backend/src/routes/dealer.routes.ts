@@ -1,10 +1,10 @@
-import { Router } from "express";
-import { authMiddleware } from "../middlewares/authMiddleware";
-import { getNearbyDealers } from '../controllers/dealer.controller';
+import express from 'express';
+import { findDealers } from '../controllers/dealer.controller';
+import { authMiddleware } from '../middlewares/authMiddleware';
 
+const router = express.Router();
 
-const dealerRouter:Router = Router();
+// Route to find dealers based on location and product name
+router.post('/search', authMiddleware as any, findDealers as any);
 
-dealerRouter.post("/find" , authMiddleware as any, getNearbyDealers);
-
-export default dealerRouter;
+export default router;

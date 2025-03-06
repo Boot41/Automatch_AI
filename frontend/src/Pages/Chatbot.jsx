@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../store/auth";
 import Sidebar from "../chatbot/Sidebar";
 import ChatWindow from "../chatbot/ChatWindow";
-import DealerButton from "../Components/DealerButton";
 
 export default function Chatbot() {
   const [sessions, setSessions] = useState([]);
@@ -109,7 +108,6 @@ export default function Chatbot() {
         />
       </div>
     </div>
-    <DealerButton axiosInstance={axiosInstance} />
     </>
   );
 }

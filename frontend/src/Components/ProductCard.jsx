@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Star, Award, Check, ChevronRight } from 'lucide-react';
+import { Star, Award, Check, MapPin } from 'lucide-react';
 
 const ProductCard = ({ product, onFindDealers }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -92,14 +92,6 @@ const ProductCard = ({ product, onFindDealers }) => {
       </div>
       
       <div className="p-6 flex-grow">
-        {/* <div className="flex items-center mb-2">
-          <div className="flex items-center text-yellow-400 mr-2">
-            <Star size={14} fill="#FBBF24" />
-            <span className="ml-1 text-sm font-bold">{rating}</span>
-          </div>
-          <span className="text-xs text-gray-400">(120+ reviews)</span>
-        </div> */}
-        
         <h3 className="text-xl font-bold mb-1 text-white">{name}</h3>
         <p className="text-green-400 font-bold text-lg mb-4">{price}</p>
         
@@ -131,23 +123,18 @@ const ProductCard = ({ product, onFindDealers }) => {
               Flipkart
             </a>
           </div>
+          
+          {/* Find Dealers button */}
+          {onFindDealers && (
+            <button
+              onClick={() => onFindDealers(name)}
+              className="w-full mt-3 flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 px-3 rounded-lg transition-colors"
+            >
+              <MapPin size={14} className="mr-1" />
+              Find Dealers Near You
+            </button>
+          )}
         </div>
-      </div>
-      
-      <div className="p-4 bg-gradient-to-r from-gray-800 to-gray-700 mt-auto">
-        <motion.button 
-          onClick={() => {
-            console.log('Find Dealers clicked for:', name);
-            onFindDealers(name);
-          }}
-          className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white py-3 px-4 rounded-xl flex items-center justify-center transition duration-300 shadow-lg"
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-        >
-          <MapPin size={18} className="mr-2" />
-          Find Dealers Near You
-          <ChevronRight size={18} className="ml-2" />
-        </motion.button>
       </div>
     </motion.div>
   );

@@ -1,198 +1,121 @@
-import React, { useEffect, useState } from 'react';
-import DealerCard from './DealerCard';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Store } from 'lucide-react';
+import { MapPin, Phone, Star, Clock, Globe, Navigation } from 'lucide-react';
 
-const DealerResults = ({ message, productName }) => {
-  const [dealers, setDealers] = useState([]);
-  const [extractedProductName, setExtractedProductName] = useState('');
-  
-  useEffect(() => {
-    console.log('DealerResults received message:', message);
-    console.log('DealerResults received productName prop:', productName);
-    
-    // Extract product name from message with multiple patterns
-    const productPatterns = [
-      /for \*\*([^*]+)\*\*/,
-      /for ([^\n]+) in your area/,
-      /dealers near you for ([^\n]+)/
-    ];
-    
-    let foundProductName = null;
-    for (const pattern of productPatterns) {
-      const match = message.match(pattern);
-      if (match && match[1]) {
-        foundProductName = match[1].trim()
-        console.log('Extracted product name from message:', foundProductName);
-        break;
-      }
-    }
-    
-    if (foundProductName) {
-      setExtractedProductName(foundProductName);
-    } else if (productName) {
-      console.log('Using provided productName prop:', productName);
-      setExtractedProductName(productName);
-    }
-    
-    // Extract dealers from message
-    const dealerList = [];
-    
-    try {
-      console.log('Parsing dealer message:', message);
-      
-      // Try multiple regex patterns to extract dealer information
-      const dealerPatterns = [
-        // Pattern 1: Numbered list with asterisks (e.g., "1. **Dealer Name**")
-        /(\d+)\. \*\*([^*]+)\*\*([\s\S]*?)(?=\d+\. \*\*|$)/g,
-        // Pattern 2: Simple format without numbers (e.g., "**Dealer Name**")
-        /\*\*([^*]+)\*\*([\s\S]*?)(?=\*\*|$)/g,
-        // Pattern 3: Simple text format (e.g., "Dealer Name:")
-        /([^:\n]+):[\s\S]*?(?=\n[^:\n]+:|$)/g
-      ];
-      
+const DealerCard = ({ dealer }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-700 hover:border-indigo-500 transition-all"
+    >
+      <div className="p-4">
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-white">{dealer.name}</h3>
+            {dealer.rating && (
+              <div className="flex items-center mt-1">
+                <Star className="h-4 w-4 text-yellow-400 mr-1" />
+                <span className="text-sm text-gray-300">
+                  {dealer.rating} ({dealer.reviewCount || 0} reviews)
+                </span>
+              </div>
+            )}
+          </div>
+          {dealer.imageUrl && (
+            <img 
+              src={dealer.imageUrl} 
+              alt={dealer.name} 
+              className="w-16 h-16 object-cover rounded-md"
+            />
+          )}
+        </div>
+        
+        <div className="mt-3 space-y-2">
+          {dealer.address && (
+            <div className="flex items-start">
+              <MapPin className="h-4 w-4 text-gray-400 mr-2 mt-1" />
+              <span className="text-sm text-gray-300">{dealer.address}</span>
+            </div>
+          )}
+          
+          {dealer.phone && (
+            <div className="flex items-center">
+              <Phone className="h-4 w-4 text-gray-400 mr-2" />
+              <span className="text-sm text-gray-300">{dealer.phone}</span>
+            </div>
+          )}
+          
+          {dealer.openHours && (
+            <div className="flex items-center">
+              <Clock className="h-4 w-4 text-gray-400 mr-2" />
+              <span className="text-sm text-gray-300">{dealer.openHours}</span>
+            </div>
+          )}
+        </div>
+        
+        <div className="mt-4 flex space-x-2">
+          {dealer.website && (
+            <a 
+              href={dealer.website} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center px-3 py-1 bg-indigo-600 hover:bg-indigo-700 rounded text-xs text-white transition-colors"
+            >
+              <Globe className="h-3 w-3 mr-1" />
+              Website
+            </a>
+          )}
+          
+          {dealer.directions && (
+            <a 
+              href={dealer.directions} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-xs text-white transition-colors"
+            >
+              <Navigation className="h-3 w-3 mr-1" />
+              Directions
+            </a>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
-      
-      // Try each pattern until we find matches
-      let foundDealers = false;
-      
-      for (const pattern of dealerPatterns) {
-        let match;
-        pattern.lastIndex = 0; // Reset regex index
-        
-        while ((match = pattern.exec(message)) !== null) {
-          foundDealers = true;
-          
-          // Different extraction based on pattern
-          const dealerName = match[1].includes('**') ? match[2].trim() : match[1].trim();
-          const dealerDetails = match[match.length - 1] || '';
-          
-          console.log('Found dealer:', dealerName, 'with details:', dealerDetails);
-          
-          // Extract address, phone, rating, and hours using multiple patterns
-          const addressPatterns = [/• Address: ([^\n]+)/, /Address: ([^\n]+)/, /address: ([^\n]+)/];
-          const phonePatterns = [/• Phone: ([^\n]+)/, /Phone: ([^\n]+)/, /phone: ([^\n]+)/];
-          const ratingPatterns = [/• Rating: ([^\n]+)/, /Rating: ([^\n]+)/, /rating: ([^\n]+)/];
-          const hoursPatterns = [/• Open: ([^\n]+)/, /Hours: ([^\n]+)/, /Open: ([^\n]+)/, /hours: ([^\n]+)/];
-          
-          const findMatch = (patterns, defaultValue) => {
-            for (const p of patterns) {
-              const m = dealerDetails.match(p);
-              if (m) return m[1].trim();
-            }
-            return defaultValue;
-          };
-          
-          const addressMatch = findMatch(addressPatterns, null);
-          const phoneMatch = findMatch(phonePatterns, null);
-          const ratingMatch = findMatch(ratingPatterns, null);
-          const hoursMatch = findMatch(hoursPatterns, null);
-        
-        dealerList.push({
-          id: match[1] || String(dealerList.length + 1),
-          name: dealerName,
-          address: addressMatch || 'Address not available',
-          phone: phoneMatch || 'Phone not available',
-          rating: ratingMatch || '4.5',
-          hours: hoursMatch || '9:00 AM - 6:00 PM'
-        });
-      }
-      
-      // If we found dealers with this pattern, stop trying other patterns
-      if (foundDealers) {
-        break;
-      }
-    }
-      
-    // If no dealers found using any of the patterns, try a fallback approach
-    if (dealerList.length === 0) {
-      console.log('No dealers found with regex patterns, trying fallback approach');
-      
-      // Simple fallback: look for key dealer indicators in the message
-      if (message.includes('Address:') && (message.includes('Phone:') || message.includes('Rating:'))) {
-        // Split by lines and look for dealer information blocks
-        const lines = message.split('\n');
-        let currentDealer = null;
-        
-        for (const line of lines) {
-          const trimmedLine = line.trim();
-          
-          // Check if this line could be a dealer name
-          if (trimmedLine && !trimmedLine.includes(':') && !trimmedLine.startsWith('•')) {
-            currentDealer = {
-              id: String(dealerList.length + 1),
-              name: trimmedLine,
-              address: 'Address not available',
-              phone: 'Phone not available',
-              rating: '4.5',
-              hours: '9:00 AM - 6:00 PM'
-            };
-            dealerList.push(currentDealer);
-          } 
-          // If we have a current dealer, try to extract details
-          else if (currentDealer) {
-            if (trimmedLine.includes('Address:')) {
-              currentDealer.address = trimmedLine.split('Address:')[1].trim();
-            } else if (trimmedLine.includes('Phone:')) {
-              currentDealer.phone = trimmedLine.split('Phone:')[1].trim();
-            } else if (trimmedLine.includes('Rating:')) {
-              currentDealer.rating = trimmedLine.split('Rating:')[1].trim();
-            } else if (trimmedLine.includes('Open:') || trimmedLine.includes('Hours:')) {
-              const hoursPart = trimmedLine.includes('Open:') ? 
-                trimmedLine.split('Open:')[1] : trimmedLine.split('Hours:')[1];
-              currentDealer.hours = hoursPart.trim();
-            }
-          }
-        }
-      }
-      }
-    } catch (error) {
-      console.error('Error parsing dealer information:', error);
-    }
-    
-    console.log('Parsed dealers:', dealerList);
-    setDealers(dealerList);
-  }, [message, productName]);
-  
+const DealerResults = ({ dealers = [], isLoading, error }) => {
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-indigo-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-900/30 border border-red-700 rounded-lg p-4 text-center">
+        <p className="text-red-300">{error}</p>
+      </div>
+    );
+  }
+
   if (!dealers || dealers.length === 0) {
     return (
-      <div className="text-center py-6">
+      <div className="bg-gray-800 rounded-lg p-4 text-center">
         <p className="text-gray-400">No dealers found for this product in your area.</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full">
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="mb-4 bg-gradient-to-r from-indigo-900/50 to-purple-900/50 p-4 rounded-lg border border-indigo-800/50"
-      >
-        <div className="flex items-center mb-2">
-          <Store className="text-indigo-400 mr-2" size={20} />
-          <h3 className="text-white font-bold">Authorized Dealers</h3>
-        </div>
-        <p className="text-gray-300 text-sm flex items-center">
-          <MapPin size={14} className="mr-1 text-indigo-400" />
-          Available dealers for <span className="text-indigo-400 font-semibold mx-1">{extractedProductName || productName || 'this product'}</span> in your area
-        </p>
-      </motion.div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="space-y-4">
+      <h3 className="text-xl font-semibold text-white mb-4">Dealers Near You</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {dealers.map((dealer, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
-          >
-            <DealerCard 
-              dealer={dealer} 
-              index={index}
-              productName={extractedProductName || productName || ''}
-            />
-          </motion.div>
+          <DealerCard key={index} dealer={dealer} />
         ))}
       </div>
     </div>

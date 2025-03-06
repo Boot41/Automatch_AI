@@ -1,20 +1,41 @@
-import { getGoogleDealers } from "../config/serpApiConfig";
-import { reverseGeocode } from "../services/geocode.service";
+import { Request, Response } from 'express';
+import { searchDealers } from '../services/dealer.service';
+import { z } from 'zod';
 
-export const getNearbyDealers = async (req:any, res:any) => { 
-  const { product, latitude, longitude } = req.body;
+// Validation schema for dealer search request
+const dealerSearchSchema = z.object({
+  location: z.string().min(1, 'Location is required'),
+  productName: z.string().min(1, 'Product name is required'),
+});
 
-  if (!product || !latitude || !longitude) {
-    return res.status(400).json({ message: "Product, Latitude & Longitude are required" });
-  }
-
+export const findDealers = async (req: Request, res: Response) => {
   try {
-    const city = await reverseGeocode(latitude, longitude); // Get City from Lat & Lon
-    const dealers = await getGoogleDealers(product, city);
+    // Validate request body
+    const validationResult = dealerSearchSchema.safeParse(req.body);
+    
+    if (!validationResult.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid request data',
+        errors: validationResult.error.errors,
+      });
+    }
 
-    return res.json({ dealers });
-  } catch (err: any) {
-    console.error(err.message);
-    return res.status(500).json({ message: err.message });
+    const { location, productName } = validationResult.data;
+    
+    // Search for dealers
+    const dealers = await searchDealers({ location, productName });
+    
+    return res.status(200).json({
+      success: true,
+      data: dealers,
+    });
+  } catch (error: any) {
+    console.error('Error in findDealers controller:', error);
+    
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to find dealers',
+    });
   }
 };

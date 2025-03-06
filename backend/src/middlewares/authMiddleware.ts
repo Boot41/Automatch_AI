@@ -43,11 +43,11 @@ export const authMiddleware = async (req: CustomRequest, res: Response, next: Ne
       req.token = token;
       
       next();
-    } catch (jwtError) {
+    } catch (jwtError: any) {
       console.error("JWT verification error:", jwtError);
       return res.status(401).json({ message: "Invalid or expired token" });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Auth middleware error:", error);
     return res.status(500).json({ message: "Internal server error in auth middleware" });
   }

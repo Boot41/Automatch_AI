@@ -12,7 +12,17 @@ export const getGoogleDealers = async (query: string, location: string) => {
     const response = await axios.get(url);
 
     if (response.data.local_results && response.data.local_results.length > 0) {
-      return response.data.local_results.slice(0, 3);
+      // Map the API response to a consistent format
+      return response.data.local_results.slice(0, 3).map((dealer: any) => ({
+        title: dealer.title,
+        name: dealer.title,
+        address: dealer.address || dealer.direction || `${location}`,
+        location: dealer.location || location,
+        phone: dealer.phone || 'Phone not available',
+        rating: dealer.rating ? `${dealer.rating}/5` : '4.5/5',
+        hours: dealer.hours || '9:00 AM - 6:00 PM',
+        thumbnail: dealer.thumbnail
+      }));
     }
     
     // If no results, fall back to mock data
@@ -34,7 +44,7 @@ const getMockDealers = (product: string) => {
       address: '123 Main Street, Bangalore, Karnataka',
       location: 'Bangalore, Karnataka',
       phone: '+91 9876543210',
-      rating: '4.8',
+      rating: '4.8/5',
       hours: '9:00 AM - 8:00 PM'
     },
     {
@@ -43,7 +53,7 @@ const getMockDealers = (product: string) => {
       address: '456 Park Avenue, Bangalore, Karnataka',
       location: 'Bangalore, Karnataka',
       phone: '+91 8765432109',
-      rating: '4.2',
+      rating: '4.2/5',
       hours: '10:00 AM - 7:00 PM'
     },
     {
@@ -52,7 +62,7 @@ const getMockDealers = (product: string) => {
       address: '789 Lake Road, Bangalore, Karnataka',
       location: 'Bangalore, Karnataka',
       phone: '+91 7654321098',
-      rating: '4.9',
+      rating: '4.9/5',
       hours: '9:30 AM - 7:30 PM'
     }
   ];
