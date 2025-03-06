@@ -8,13 +8,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: "postgresql://neondb_owner:npg_7B2VWHjCeYuT@postgres:5432/neondb"
+      PORT: "3000"
+      DATABASE_URL: "postgresql://neondb_owner:npg_7B2VWHjCeYuT@ep-silent-violet-a10469r9-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
       JWT_SECRET: "automatch_secret"
       GEMINI_API_KEY: "AIzaSyAj5Gh1iLFG0HvdZqaNGTVJkbkeLX5S5nE"
       SERP_API_KEY: "4f68aa9b6e7491102b020c0f28f8b283af8fa5e7a83d67844c267751c78fc638"
-    depends_on:
-      postgres:
-        condition: service_healthy
     restart: always
 
   frontend:
@@ -26,23 +24,3 @@ services:
     depends_on:
       - backend
     restart: always
-
-  postgres:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: neondb_owner
-      POSTGRES_PASSWORD: npg_7B2VWHjCeYuT
-      POSTGRES_DB: neondb
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U neondb_owner -d neondb"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres_data:
