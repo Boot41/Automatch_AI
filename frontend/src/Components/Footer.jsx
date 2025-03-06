@@ -12,7 +12,11 @@ const Footer = () => {
     <footer className="bg-gray-900 relative border-t border-gray-700">
       <div className="max-w-7xl mx-auto p-10 flex justify-between">
         <div className="flex flex-col items-center md:items-start text-center md:text-left pl-5">
+          <div className="flex items-center">
           <MessageSquare className="h-10 w-10 text-indigo-400 animate-spin-slow" />
+          <span className="text-2xl font-semibold text-indigo-400 pl-2">Automatch AI</span>
+          </div>
+          
           <p className="text-md text-gray-400 mt-2">
             Your Personal AI Product Matcher
           </p>
@@ -22,16 +26,16 @@ const Footer = () => {
           <h3 className="text-xl font-semibold text-gray-200 mb-4">Quick Links</h3>
           <ul className="space-y-3 text-gray-400">
             <li className="hover:text-indigo-400 transition duration-300">
+              <Link onClick={handleClick} to="/">Home</Link>
+            </li>
+            <li className="hover:text-indigo-400 transition duration-300">
               <Link onClick={handleClick} to="/chatbot">Chat</Link>
             </li>
             <li className="hover:text-indigo-400 transition duration-300">
               <Link onClick={handleClick} to="/about">About</Link>
             </li>
             <li className="hover:text-indigo-400 transition duration-300">
-              <Link onClick={handleClick} to="/contact">Contact Us</Link>
-            </li>
-            <li className="hover:text-indigo-400 transition duration-300">
-              <Link onClick={handleClick} to="/terms">Terms & Conditions</Link>
+              <Link onClick={handleClick} to="/pricing">Pricing</Link>
             </li>
           </ul>
         </div>

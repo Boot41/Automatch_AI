@@ -11,7 +11,7 @@ const Navbar = () => {
     Home: "/",
     Chat: "/chatbot",
     About: "/about",
-    Contact: "/contact",
+    Pricing: "/pricing",
   };
 
   return (
