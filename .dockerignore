@@ -1,12 +1,13 @@
 # Node modules
 node_modules
 
-# Environment variables
+# Environment variables (except backend/.env which we need)
 .env
 .env.local
 .env.development
 .env.test
 .env.production
+!backend/.env
 
 # Logs
 logs

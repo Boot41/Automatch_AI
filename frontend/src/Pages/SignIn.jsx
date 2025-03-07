@@ -24,7 +24,7 @@ const SignIn = () => {
 
     try {
       // Sign in the user
-      const response = await api.post('/api/v1/auth/signin', { email, password });
+      const response = await api.post('/auth/signin', { email, password });
       const token = response.data.token;
       
       // Store the token
