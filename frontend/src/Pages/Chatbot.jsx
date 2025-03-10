@@ -18,7 +18,7 @@ export default function Chatbot() {
 
   const fetchSessions = async () => {
     try {
-      const response = await axiosInstance.get("http://localhost:3000/api/v1/user/sessions");
+      const response = await axiosInstance.get("/user/sessions");
       setSessions(response.data.sessions || []);
 
       if (response.data.sessions.length > 0) {
@@ -32,7 +32,7 @@ export default function Chatbot() {
 
   const fetchMessages = async (sessionId) => {
     try {
-      const response = await axiosInstance.get(`http://localhost:3000/api/v1/user/messages/${sessionId}`);
+      const response = await axiosInstance.get(`/user/messages/${sessionId}`);
       
       // Process messages to handle dealer messages
       const processedMessages = (response.data.messages || []).map(msg => {
@@ -69,7 +69,7 @@ export default function Chatbot() {
 
   const startChat = async () => {
     try {
-      const response = await axiosInstance.post("http://localhost:3000/api/v1/ai/start");
+      const response = await axiosInstance.post("/ai/start");
 
       if (response.data?.session?.id) {
         setSessions([response.data.session, ...sessions]);
@@ -90,7 +90,7 @@ export default function Chatbot() {
     setLoading(true);
 
     try {
-      const response = await axiosInstance.post("http://localhost:3000/api/v1/ai/reply", {
+      const response = await axiosInstance.post("/ai/reply", {
         sessionId: activeSession,
         userReply: input,
       });

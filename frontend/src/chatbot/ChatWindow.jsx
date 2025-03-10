@@ -141,7 +141,7 @@ export default function ChatWindow({
       console.log(`Searching for ${productName} dealers near ${userLocation}`);
       
       // Call the dealer search API
-      const response = await api.post('/api/v1/dealers/search', {
+      const response = await api.post('/dealers/search', {
         location: userLocation,
         productName: productName,
       });
@@ -150,7 +150,7 @@ export default function ChatWindow({
       
       // Save the dealer message to the backend
       try {
-        await api.post('/api/v1/ai/save-dealer-message', {
+        await api.post('/ai/save-dealer-message', {
           sessionId: activeSession,
           userMessage: `Find dealers for ${productName} near me`,
           dealerData: {

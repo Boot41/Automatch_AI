@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useAuth } from "../store/auth";
 import { useNavigate } from "react-router-dom";
-import { Home, Plus, MessageSquare, Trash2, LogOut, Settings, User as UserIcon, X, LogIn, UserPlus, HomeIcon } from "lucide-react";
+import {  MessageSquare,  LogOut, User as UserIcon, LogIn, UserPlus } from "lucide-react";
 import moment from "moment";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,15 +14,14 @@ export default function Sidebar({
   onNewChat,
   setSessions, // Add this prop
 }) {
-  const [sessionToDelete, setSessionToDelete] = useState(null);
-  const { axiosInstance, isTokenAvailable, storingTokenInLS, userAuthentication, logOutUser } = useAuth();
+  const { axiosInstance, isTokenAvailable, logOutUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSessionClick = async (sessionId) => {
     try {
       onSelectSession(sessionId);
       const response = await axiosInstance.get(
-        `http://localhost:3000/api/v1/ai/messages/${sessionId}`
+        `/ai/messages/${sessionId}`
       );
 
       if (response.data.messages) {
@@ -33,55 +32,6 @@ export default function Sidebar({
     }
   };
   
-  // Handle session deletion
-  const confirmDeleteSession = (e, sessionId) => {
-    e.stopPropagation();
-    setSessionToDelete(sessionId);
-  };
-  
-  const deleteSession = async () => {
-    if (!sessionToDelete) return;
-    
-    setIsDeleting(true);
-    try {
-      await axiosInstance.delete(`http://localhost:3000/api/v1/ai/sessions/${sessionToDelete}`);
-      
-      // Update sessions state by filtering out the deleted session
-      setSessions(prevSessions => prevSessions.filter(session => session.id !== sessionToDelete));
-      
-      // If the deleted session was active, create a new chat
-      if (activeSession === sessionToDelete) {
-        onNewChat();
-      }
-      
-      toast.success('Session deleted successfully');
-      const updatedSessions = sessions.filter(session => session.id !== sessionToDelete);
-      
-      // If active session was deleted, select another one or clear messages
-      if (activeSession === sessionToDelete) {
-        if (updatedSessions.length > 0) {
-          onSelectSession(updatedSessions[0].id);
-        } else {
-          onSelectSession(null);
-        }
-      }
-      
-      // Reload sessions from parent component
-      window.location.reload();
-      
-      toast.success('Chat session deleted successfully');
-    } catch (error) {
-      console.error('Error deleting session:', error);
-      toast.error('Failed to delete chat session');
-    } finally {
-      setIsDeleting(false);
-      setSessionToDelete(null);
-    }
-  };
-  
-  const cancelDelete = () => {
-    setSessionToDelete(null);
-  };
 
   const groupSessionsByDate = (sessions) => {
     const today = moment().startOf("day");
@@ -261,97 +211,6 @@ export default function Sidebar({
           </div>
         )}
       </div>
-      {/* Delete confirmation modal */}
-      {/* <AnimatePresence>
-        {sessionToDelete && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-          >
-            <motion.div 
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              className="bg-gray-800 p-6 rounded-xl shadow-xl max-w-sm w-full border border-gray-700"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-white">Delete Chat Session</h3>
-                <button 
-                  onClick={cancelDelete}
-                  className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-              <p className="text-gray-300 mb-6">Are you sure you want to delete this chat session? This action cannot be undone.</p>
-              <div className="flex justify-end space-x-3">
-                <button
-                  onClick={cancelDelete}
-                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-                  disabled={isDeleting}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={deleteSession}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center"
-                  disabled={isDeleting}
-                >
-                  {isDeleting ? 'Deleting...' : 'Delete'}
-                  {isDeleting && (
-                    <svg className="animate-spin ml-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                  )}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence> */}
-      
-      {/* Authentication Modal */}
-      {/* <AnimatePresence>
-        {showAuthModal && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-          >
-            <motion.div 
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
-              className="bg-gray-800 p-6 rounded-xl shadow-xl max-w-md w-full border border-gray-700"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-white">{authMode === 'login' ? 'Sign In' : 'Create Account'}</h3>
-                <button 
-                  onClick={() => setShowAuthModal(false)}
-                  className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-              
-
-              
-              <div className="mt-4 text-center">
-                <button
-                  onClick={() => setAuthMode(authMode === 'login' ? 'register' : 'login')}
-                  className="text-indigo-400 hover:text-indigo-300 text-sm"
-                >
-                  {authMode === 'login' ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence> */}
     </motion.div>
   );
 }

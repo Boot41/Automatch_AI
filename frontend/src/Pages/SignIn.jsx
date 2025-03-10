@@ -33,7 +33,7 @@ const SignIn = () => {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       try {
-        await api.post('/api/v1/ai/start');
+        await api.post('/ai/start');
       } catch (chatErr) {
         console.error('Error starting chat session:', chatErr);
       }
