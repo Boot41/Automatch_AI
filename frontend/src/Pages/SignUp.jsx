@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MessageSquare, Eye, EyeOff, Lock, Mail, User, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, User, Loader2 } from 'lucide-react';
 import api from '../config/api';
+import Navbar from '../Components/Navbar';
+import {ArrowRight} from 'lucide-react';
 
 const SignUp = () => {
   const [name, setName] = useState('');
@@ -41,8 +43,10 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col justify-center">
-      <div className="max-w-md w-full mx-auto px-4 py-8">
+    <>
+    <Navbar/>
+    <div className="py-8 bg-gray-900 flex flex-col justify-center">
+      <div className="max-w-md w-full mx-auto px-4 py-2">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Create an account</h1>
           <p className="text-gray-400">Join AutoMatch AI to find your perfect product match</p>
@@ -127,12 +131,22 @@ const SignUp = () => {
             </div>
 
             <button
-              type="submit"
-              className="w-full flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-              disabled={isLoading}
-            >
-              {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Create Account'}
-            </button>
+  type="submit"
+  disabled={isLoading}
+  className="w-full flex items-center justify-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-4 rounded-lg transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+>
+  {isLoading ? (
+    <>
+      <Loader2 className="h-5 w-5 animate-spin" />
+      <span>Signing up...</span>
+    </>
+  ) : (
+    <>
+      <span>Sign up</span>
+      <ArrowRight className="h-5 w-5" />
+    </>
+  )}
+</button>
           </form>
         </div>
 
@@ -144,6 +158,7 @@ const SignUp = () => {
         </p>
       </div>
     </div>
+    </>
   );
 };
 

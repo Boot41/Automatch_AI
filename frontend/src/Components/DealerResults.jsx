@@ -3,6 +3,13 @@ import { motion } from 'framer-motion';
 import { MapPin, Phone, Star, Clock, Globe, Navigation } from 'lucide-react';
 
 const DealerCard = ({ dealer }) => {
+  if (!dealer) return null;
+
+  // Generate Google Maps direction link
+  const googleMapsLink = dealer.address
+    ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dealer.address)}`
+    : null;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -34,9 +41,9 @@ const DealerCard = ({ dealer }) => {
         
         <div className="mt-3 space-y-2">
           {dealer.address && (
-            <div className="flex items-start">
-              <MapPin className="h-4 w-4 text-gray-400 mr-2 mt-1" />
-              <span className="text-sm text-gray-300">{dealer.address}</span>
+            <div className="flex items-center text-[14px]">
+              <MapPin className="h-5 w-5 text-gray-400 mr-2 mt-1" />
+                {dealer.address}
             </div>
           )}
           
@@ -68,7 +75,7 @@ const DealerCard = ({ dealer }) => {
             </a>
           )}
           
-          {dealer.directions && (
+          {dealer.directions ? (
             <a 
               href={dealer.directions} 
               target="_blank" 
@@ -78,7 +85,17 @@ const DealerCard = ({ dealer }) => {
               <Navigation className="h-3 w-3 mr-1" />
               Directions
             </a>
-          )}
+          ) : googleMapsLink ? (
+            <a 
+              href={googleMapsLink} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center px-3 py-1 bg-green-600 hover:bg-green-700 rounded text-xs text-white transition-colors"
+            >
+              <Navigation className="h-3 w-3 mr-1" />
+              Get Directions
+            </a>
+          ) : null}
         </div>
       </div>
     </motion.div>

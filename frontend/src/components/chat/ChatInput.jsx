@@ -1,5 +1,5 @@
 import React from 'react';
-import { Send, AlertCircle, Mic, Paperclip, Smile, Pencil } from 'lucide-react';
+import { Send, AlertCircle, Pencil } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ChatInput = ({ isTokenAvailable, input, setInput, handleKeyDown, handleSendMessage, loading }) => {

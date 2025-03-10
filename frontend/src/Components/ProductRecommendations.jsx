@@ -2,6 +2,7 @@ import React from 'react';
 import ProductCard from './ProductCard';
 import { motion } from 'framer-motion';
 import { ShoppingCart } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 const ProductRecommendations = ({ message, onFindDealers }) => {
   // Parse the message to extract product recommendations
@@ -49,10 +50,10 @@ const ProductRecommendations = ({ message, onFindDealers }) => {
           <ShoppingCart className="text-indigo-400 mr-2" size={20} />
           <h3 className="text-white font-bold">Recommended Products</h3>
         </div>
-        <p className="text-gray-300 text-sm">
-          {intro || "Here are the top recommendations based on your requirements. Click on Amazon or Flipkart links to purchase online."}
-          {onFindDealers && " You can also find local dealers for these products."}
-        </p>
+        <div className="text-gray-300 text-sm">
+  <ReactMarkdown>{intro}</ReactMarkdown>
+  {onFindDealers && <p className='text-sm'>You can also find local dealers for these products.</p>}
+</div>
       </motion.div>
 
       <motion.div 

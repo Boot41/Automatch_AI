@@ -8,14 +8,14 @@ const Features = () => {
       initial={{ opacity: 0, y: 50 }} 
       animate={{ opacity: 1, y: 0 }} 
       transition={{ duration: 1 }} 
-      className="py-16 bg-gray-900 relative overflow-hidden"
+      className="py-16 bg-gray-900 relative overflow-hidden md:px-1 px-2"
     >
       <div className="text-center mb-16 relative">
         <motion.h2 
           initial={{ opacity: 0, y: -50 }} 
           animate={{ opacity: 1, y: 0 }} 
           transition={{ duration: 1, delay: 0.4 }} 
-          className="text-5xl font-bold text-indigo-400 mb-4"
+          className="text-3xl md:text-5xl font-bold text-indigo-400 mb-3 md:mb-4"
         >
           How It Works
         </motion.h2>
@@ -23,7 +23,7 @@ const Features = () => {
           initial={{ opacity: 0, y: 50 }} 
           animate={{ opacity: 1, y: 0 }} 
           transition={{ duration: 1, delay: 0.6 }} 
-          className="text-xl text-gray-400 max-w-3xl mx-auto"
+          className="text-[16px] md:text-xl text-gray-400 max-w-3xl mx-auto"
         >
           Our AI-powered platform makes finding your perfect product simple and intuitive.
         </motion.p>
@@ -49,7 +49,7 @@ const Features = () => {
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.4, delay: 0.3 + index * 0.6 }} 
             whileHover={{ scale: 1.08 }} 
-            className="bg-gray-800 p-8 rounded-lg text-center shadow-md transition duration-200 ease-in-out"
+            className="bg-gray-800 p-4 md:p-8 rounded-lg text-center shadow-md transition duration-200 ease-in-out"
           >
             <div className="bg-indigo-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
               <feature.icon className="h-8 w-8 text-indigo-600" />
