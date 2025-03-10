@@ -5,18 +5,18 @@ import {
 
 const Testimonial = () => {
   return (
-    <section className="py-16 bg-gray-900 shadow-sm">
+    <section className="py-16 bg-gray-900 shadow-sm ">
         <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold text-indigo-400 mb-4">
+          <h2 className="text-3xl md:text-5xl font-bold text-indigo-400 mb-4">
             What Our Users Say
           </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+          <p className="text-[16px] md:text-xl text-gray-400 max-w-3xl mx-auto">
             Don't just take our word for it. Here's what people are saying about
             AutoMatch AI.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto px-2 md:px-1">
           <div className="bg-gray-800 p-8 rounded-lg">
             <div className="flex items-center text-yellow-400 mb-4">
               {[...Array(5)].map((_, i) => (
@@ -30,7 +30,7 @@ const Testimonial = () => {
             <div className="flex items-center">
               <div className="w-12 h-12 bg-indigo-200 rounded-full mr-4"></div>
               <div>
-                <h4 className="font-semibold text-indigo-400">Sarah Johnson</h4>
+                <h4 className="font-semibold text-indigo-400">Ketan Jain</h4>
                 <p className="text-gray-300 text-sm">Smartphone Buyer</p>
               </div>
             </div>
@@ -49,7 +49,7 @@ const Testimonial = () => {
             <div className="flex items-center">
               <div className="w-12 h-12 bg-indigo-200 rounded-full mr-4"></div>
               <div>
-                <h4 className="font-semibold text-indigo-400">Michael Chen</h4>
+                <h4 className="font-semibold text-indigo-400">Karan</h4>
                 <p className="text-gray-300 text-sm">Car Buyer</p>
               </div>
             </div>
@@ -68,7 +68,7 @@ const Testimonial = () => {
             <div className="flex items-center">
               <div className="w-12 h-12 bg-indigo-200 rounded-full mr-4"></div>
               <div>
-                <h4 className="font-semibold text-indigo-400">Emily Rodriguez</h4>
+                <h4 className="font-semibold text-indigo-400">Nitin</h4>
                 <p className="text-gray-300 text-sm">Electronics Buyer</p>
               </div>
             </div>

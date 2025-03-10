@@ -14,7 +14,6 @@ const ChatMessages = ({
   messages,
   loading,
   containsProductRecommendations,
-  isDealerResponse,
   setShowMessageActions,
   showMessageActions,
   setMessageToDelete,

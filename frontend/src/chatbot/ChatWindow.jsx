@@ -15,7 +15,6 @@ export default function ChatWindow({
   setInput,
   sendMessage,
   loading,
-  setLoading,
   setMessages,
   activeSession
 }) {
@@ -44,7 +43,7 @@ export default function ChatWindow({
     );
   };
 
-  // Check if a message is a dealer response
+  // Check if a message is a dealer response  
   const isDealerResponse = (message) => {
     return message.type === 'dealer';
   };
@@ -223,16 +222,6 @@ export default function ChatWindow({
         handleSendMessage={handleSendMessage}
         loading={loading}
       />
-
-      {/* Delete Message Modal Component */}
-      {/* <AnimatePresence>
-        <DeleteMessageModal 
-          messageToDelete={messageToDelete}
-          setMessageToDelete={setMessageToDelete}
-          messages={messages}
-          setMessages={setMessages}
-        />
-      </AnimatePresence> */}
     </div>
   );
 }
